@@ -19,6 +19,7 @@ function date_filter(){
 	$.ajax({
 		type: "POST",
 		url: "ajax_table.php",
+		dataType : 'html',
 		data: {
 		  	start_date: $("#tarigi_dan").val(),
 		  	end_date: $("#tarigi_mde").val(),
@@ -26,7 +27,8 @@ function date_filter(){
 		  	employee: $("#staff option:selected").val(),
 		  	laboratory: $("#jgufi_laboratoria option:selected").val(),
 		  	department: $("#ganyofileba option:selected").val(),
-			filter_date_frequency: $('input[name=optradio]:checked').val()
+			filter_date_frequency: $('input[name=optradio]:checked').val(),
+			page: $("#page option:selected").val()
 		},
 		success: function(responce){
 			$("#table_content").html(responce);
@@ -35,6 +37,9 @@ function date_filter(){
 		},
 		error: function (xhr, textStatus, errorThrown) {
         console.log(xhr.responseText);
+        console.log(xhr.responseXML);
+        console.log(errorThrown);
+
     	}
 	});
 }
