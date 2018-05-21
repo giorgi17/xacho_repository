@@ -341,7 +341,7 @@ if (isset($_POST['page'])){
           $pages = ceil(sizeof($week_month_main_array) / $row_count); 
         }
       }
-  }
+  } 
 
 
 
@@ -408,7 +408,7 @@ if (isset($_POST['page'])){
     {
       $result = mysqli_query($db, "SELECT ies_staff.staff.first_name, ies_staff.staff.last_name, ies_inventari.turnstile_records_arranged.*
                             FROM ies_staff.staff LEFT JOIN ies_inventari.turnstile_records_arranged
-                            ON ies_staff.staff.card_number = ies_inventari.turnstile_records_arranged.card_number WHERE $where ORDER BY `date_time` DESC LIMIT $row_count");
+                            ON ies_staff.staff.card_number = ies_inventari.turnstile_records_arranged.card_number WHERE $where ORDER BY `date_time` DESC");
        if ($filter_date_frequency == "week" || $filter_date_frequency == "month"){
        $query = mysqli_query($db, "SELECT ies_staff.staff.first_name, ies_staff.staff.last_name, ies_staff.staff.card_number FROM ies_staff.staff");
       } 
@@ -480,6 +480,7 @@ if (isset($_POST['page'])){
 
 
             // updating existing 
+          
             while ($row2 = mysqli_fetch_assoc($result)){               
                           for ($i = 0; $i < sizeof($week_month_main_array); $i++)
                           {
@@ -496,6 +497,15 @@ if (isset($_POST['page'])){
                           } 
               
             }
+          } else {
+            $pg_size = 0;
+            while ($row2 = mysqli_fetch_assoc($result)){  
+            $pg_size++;
+            }
+            $pages = ceil($pg_size / $row_count); 
+            ChromePhp::log("this is daily page size !! " . $pages);
+            ChromePhp::log("RECORDS " . $pg_size);
+            mysqli_data_seek($result, 0);
           }
         }
     //var_dump($arr);
@@ -625,21 +635,37 @@ ChromePhp::log($final_arr);
                 }
             }
         }
-      } else {
+      } else if ($filter_date_frequency) {
  
+              $z = 1;
           while ($myrow = mysqli_fetch_assoc($result)){
-            echo '<tr><td>'.$myrow['first_name']." ".$myrow['last_name'].'</td> <td>' . $myrow['date_time'] . '</td> <td>' . $myrow['card_number'] . '</td> <td>' . $myrow['on_duty'] . '</td> <td>' . $myrow['off_duty']. '</td> <td>' . $myrow['in_time'] . '</td> <td>' . $myrow['out_time'] . '</td>';
+            if ($z > (($page * $row_count) - $row_count) && $z <= ($page * $row_count)){
+              echo '<tr><td>'.$myrow['first_name']." ".$myrow['last_name'].'</td> <td>' . $myrow['date_time'] . '</td> <td>' . $myrow['card_number'] . '</td> <td>' . $myrow['on_duty'] . '</td> <td>' . $myrow['off_duty']. '</td> <td>' . $myrow['in_time'] . '</td> <td>' . $myrow['out_time'] . '</td>';
+
+            }
             $i++;
+            $z++;
+            
           }
+          
         }
     } else {
- 
+          $z = 1;
           while ($myrow = mysqli_fetch_assoc($result)){
-           echo '<tr><td>'.$myrow['first_name']." ".$myrow['last_name'].'</td> <td>' . $myrow['date_time'] . '</td> <td>' . $myrow['card_number'] . '</td> <td>' . $myrow['on_duty'] . '</td> <td>' . $myrow['off_duty']. '</td> <td>' . $myrow['in_time'] . '</td> <td>' . $myrow['out_time'] . '</td>';
+            if ($z > (($page * $row_count) - $row_count) && $z <= ($page * $row_count)){
+              echo '<tr><td>'.$myrow['first_name']." ".$myrow['last_name'].'</td> <td>' . $myrow['date_time'] . '</td> <td>' . $myrow['card_number'] . '</td> <td>' . $myrow['on_duty'] . '</td> <td>' . $myrow['off_duty']. '</td> <td>' . $myrow['in_time'] . '</td> <td>' . $myrow['out_time'] . '</td>';
+            }
             $i++;
+            $z++;
           }
         }
      
+
+    if(isset($_POST['filter_date_frequency']))
+    {
+      ChromePhp::log("YEAH IT'S SET");
+      ChromePhp::log($filter_date_frequency);
+    } 
  ?>
 
  </table>
